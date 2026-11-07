@@ -1,16 +1,63 @@
-Jeremy Wise Project B
-bootload.asm is used and so are the commands in compileOS.sh from Project A. Project B replaces Project A's video-memory Hello World kernel with the Project B BIOS system call implementation.
-The build script creates a fresh diskc.img.
+PROJECT C - README
 
-RUN ./compileOS.sh The script assembles the bootloader, compiles and links the new kernel,
-The bootloader's 10-sector 512K kernel limit is checked, writes the bootloader to sector 0, writes the kernel starting at sector 3, and writes message.txt to sector 30.
+1. WHAT I DID
 
-Load diskc.img as hard disk C using the settings from Project A and boot
-Expected conditions: a ready message, a keyboard prompt, echoed input, and a message loaded from sector 30,
-For a backspace test, enter abc, backspace, d, and Enter: the echoed result should be abd (not ad).
+For Project C, I extended my operating system from Project B to support a basic file system and program execution.
 
+I implemented three additional system calls:
 
-- printString: BIOS INT 10h video output, stopping at NUL.
-- readString: Reads keyboard input using interrupt 0x16 and handles backspace.
-- readSector: Reads a sector from the disk using interrupt 0x13.
-- handleInterrupt21: Uses AX to determine which function to call. 0 prints a string, 1 reads keyboard input, and 2 reads a disk sector. Other values print an error.
+AX=3: Read a file from disk using its filename.
+AX=4: Load and execute a program.
+AX=5: Terminate a program and restart the shell.
+
+I also implemented a shell supporting the commands "type" and "exec", and a loadFile utility that places files onto the disk image.
+
+2. HOW TO VERIFY
+
+Compile the operating system on the Linux server:
+
+cd ~/seanjeremy/project_c
+./compileOS.sh
+
+This generates diskc.img.
+
+Open EmuMaker86 on the Mac, select diskc.img as Hard Disk C, and boot from Disk C.
+
+The operating system should display a shell prompt.
+
+TEST 1: FILE READING
+
+Enter:
+
+type messag
+
+Expected result: The contents of message.txt appear on the screen.
+
+TEST 2: PROGRAM EXECUTION
+
+Enter:
+
+exec tstpr1
+
+Expected result: The message "tstpr1 is working!" appears. The original program then enters an intentional infinite loop. Reboot to return to the shell.
+
+TEST 3: PROGRAM TERMINATION
+
+Enter:
+
+exec tstpr2
+
+Expected result: The program executes and returns to the shell using system call AX=5.
+
+3. FILES
+
+bootload.asm - Bootloader
+kernel.c - Kernel functions
+kernel.asm - Assembly routines
+shell.c - Command shell
+userlib.asm - System call interface
+loadFile.c - File loading utility
+tstpr1.c - Program execution test
+tstpr2.c - Program termination test
+compileOS.sh - Build script
+diskc.img - Bootable disk image
