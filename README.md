@@ -3,7 +3,7 @@ bootload.asm is used and so are the commands in compileOS.sh from Project A. Pro
 The build script creates a fresh diskc.img.
 
 RUN ./compileOS.sh The script assembles the bootloader, compiles and links the new kernel,
-The bootloader's 10-sector 512K kernel limit is checked, writes the bootloader to sector 0, writes the kernel starting at sector 3, and writes message.txt to sector 30. It doesn't work and I don't know why.
+The bootloader's 10-sector 512K kernel limit is checked, writes the bootloader to sector 0, writes the kernel starting at sector 3, and writes message.txt to sector 30.
 
 Load diskc.img as hard disk C using the settings from Project A and boot
 Expected conditions: a ready message, a keyboard prompt, echoed input, and a message loaded from sector 30,
